@@ -27,3 +27,7 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+
+# Generated evaluation reports
+evals/*-report.json
+evals/latest-report.json

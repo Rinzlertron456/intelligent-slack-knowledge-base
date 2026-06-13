@@ -1,0 +1,133 @@
+{
+  "name": "buildathon-ps02-golden-v1",
+  "documents": [
+    {
+      "id": "leave-policy",
+      "title": "Leave Policy",
+      "scope": "org",
+      "content": "Full-time employees receive 21 paid leave days per calendar year. Leave requests must be submitted in the HR portal at least five working days before the first day of leave. The reporting manager approves the request."
+    },
+    {
+      "id": "security-policy",
+      "title": "Security Incident Policy",
+      "scope": "org",
+      "content": "Suspected phishing must be reported to security@acme.test within 15 minutes. Employees must never share passwords or one-time passwords. A lost company device must be reported immediately to the security team."
+    },
+    {
+      "id": "expense-policy",
+      "title": "Expense Reimbursement Policy",
+      "scope": "org",
+      "content": "Business expenses up to INR 5,000 do not require advance approval. Any expense above INR 5,000 requires the employee's reporting manager to approve it before purchase. Receipts must be uploaded within 10 calendar days."
+    },
+    {
+      "id": "release-policy",
+      "title": "Engineering Release Calendar",
+      "scope": "org",
+      "content": "Production releases are scheduled on Tuesday and Thursday at 4 PM IST. Friday is a production freeze day. Emergency releases require approval from the incident commander and engineering director."
+    },
+    {
+      "id": "onboarding-guide",
+      "title": "New Joiner Onboarding Guide",
+      "scope": "org",
+      "content": "New joiners receive their laptop on day one and are assigned a buddy for the first 30 days. Mandatory security training must be completed within seven calendar days. Payroll documents are submitted in the HR portal."
+    },
+    {
+      "id": "support-sla",
+      "title": "Customer Support SLA",
+      "scope": "org",
+      "content": "Priority 1 incidents require acknowledgement within 15 minutes, customer updates every 30 minutes, and a target service restoration time of four hours. Priority 2 incidents require acknowledgement within two hours."
+    },
+    {
+      "id": "orion-runbook",
+      "title": "Project Orion Runbook",
+      "scope": "team",
+      "channel_id": "C_ENGINEERING",
+      "content": "Project Orion runs Python 3.12 with FastAPI and PostgreSQL. Production alerts are handled in the #eng-oncall channel. The primary deployment region is Singapore."
+    },
+    {
+      "id": "sales-discounts",
+      "title": "Sales Discount Rules",
+      "scope": "team",
+      "channel_id": "C_SALES",
+      "content": "Account executives may approve discounts up to 10 percent. Discounts above 10 percent require approval from the VP of Sales. All discounts must be recorded in the CRM."
+    },
+    {
+      "id": "hiring-process",
+      "title": "People Team Interview Process",
+      "scope": "team",
+      "channel_id": "C_PEOPLE",
+      "content": "Interviewers must submit the structured scorecard within 24 hours of an interview. The hiring manager owns the final recommendation. Candidate feedback must not be posted in public Slack channels."
+    },
+    {
+      "id": "alice-preferences",
+      "title": "Alice Travel Preferences",
+      "scope": "personal",
+      "owner_user_id": "U_ALICE",
+      "content": "Alice prefers an aisle seat and vegetarian meals for business travel. Her preferred departure airport is Hyderabad."
+    },
+    {
+      "id": "bob-notes",
+      "title": "Bob Private Project Notes",
+      "scope": "personal",
+      "owner_user_id": "U_BOB",
+      "content": "Bob's private launch codename is Cedar. His internal rehearsal is scheduled for Wednesday at 3 PM IST."
+    }
+  ],
+  "cases": [
+    {"id":"leave-01","question":"How many paid leave days do full-time employees receive?","expected_outcome":"answer","expected_terms":["21"],"expected_source":"Leave Policy"},
+    {"id":"leave-02","question":"Where should I submit a leave request?","expected_outcome":"answer","expected_terms":["hr portal"],"expected_source":"Leave Policy"},
+    {"id":"leave-03","question":"How early must leave be requested?","expected_outcome":"answer","expected_terms":["five","working days"],"expected_source":"Leave Policy"},
+    {"id":"leave-04","question":"Who approves employee leave?","expected_outcome":"answer","expected_terms":["reporting manager"],"expected_source":"Leave Policy"},
+    {"id":"leave-05","question":"Is annual paid leave 21 days?","expected_outcome":"answer","expected_terms":["21"],"expected_source":"Leave Policy"},
+    {"id":"leave-06","question":"Summarize the leave timing requirement.","expected_outcome":"answer","expected_terms":["five","working days"],"expected_source":"Leave Policy"},
+
+    {"id":"security-01","question":"Where do I report suspected phishing?","expected_outcome":"answer","expected_terms":["security@acme.test"],"expected_source":"Security Incident Policy"},
+    {"id":"security-02","question":"How quickly must phishing be reported?","expected_outcome":"answer","expected_terms":["15","minutes"],"expected_source":"Security Incident Policy"},
+    {"id":"security-03","question":"Can employees share a one-time password with IT?","expected_outcome":"answer","expected_terms":["never"],"expected_source":"Security Incident Policy"},
+    {"id":"security-04","question":"What should I do after losing a company laptop?","expected_outcome":"answer","expected_terms":["immediately","security"],"expected_source":"Security Incident Policy"},
+
+    {"id":"expense-01","question":"What expense amount needs no advance approval?","expected_outcome":"answer","expected_terms":["5,000"],"expected_source":"Expense Reimbursement Policy"},
+    {"id":"expense-02","question":"Who approves expenses above INR 5,000?","expected_outcome":"answer","expected_terms":["reporting manager"],"expected_source":"Expense Reimbursement Policy"},
+    {"id":"expense-03","question":"When must receipts be uploaded?","expected_outcome":"answer","expected_terms":["10","calendar days"],"expected_source":"Expense Reimbursement Policy"},
+    {"id":"expense-04","question":"Does an INR 8,000 purchase require prior approval?","expected_outcome":"answer","expected_terms":["5,000","reporting manager"],"expected_source":"Expense Reimbursement Policy"},
+
+    {"id":"release-01","question":"When are production releases scheduled?","expected_outcome":"answer","expected_terms":["Tuesday","Thursday","4 PM"],"expected_source":"Engineering Release Calendar"},
+    {"id":"release-02","question":"Is Friday a normal production release day?","expected_outcome":"answer","expected_terms":["freeze"],"expected_source":"Engineering Release Calendar"},
+    {"id":"release-03","question":"Who approves an emergency release?","expected_outcome":"answer","expected_terms":["incident commander","engineering director"],"expected_source":"Engineering Release Calendar"},
+    {"id":"release-04","question":"What timezone is used for the regular release time?","expected_outcome":"answer","expected_terms":["IST"],"expected_source":"Engineering Release Calendar"},
+
+    {"id":"onboarding-01","question":"When does a new joiner receive a laptop?","expected_outcome":"answer","expected_terms":["day one"],"expected_source":"New Joiner Onboarding Guide"},
+    {"id":"onboarding-02","question":"How long is the onboarding buddy assigned?","expected_outcome":"answer","expected_terms":["30","days"],"expected_source":"New Joiner Onboarding Guide"},
+    {"id":"onboarding-03","question":"When is security training due for a new employee?","expected_outcome":"answer","expected_terms":["seven","calendar days"],"expected_source":"New Joiner Onboarding Guide"},
+    {"id":"onboarding-04","question":"Where are payroll documents submitted?","expected_outcome":"answer","expected_terms":["hr portal"],"expected_source":"New Joiner Onboarding Guide"},
+
+    {"id":"sla-01","question":"What is the P1 acknowledgement target?","expected_outcome":"answer","expected_terms":["15","minutes"],"expected_source":"Customer Support SLA"},
+    {"id":"sla-02","question":"How often must customers receive P1 updates?","expected_outcome":"answer","expected_terms":["30","minutes"],"expected_source":"Customer Support SLA"},
+    {"id":"sla-03","question":"What is the P1 restoration target?","expected_outcome":"answer","expected_terms":["four","hours"],"expected_source":"Customer Support SLA"},
+    {"id":"sla-04","question":"What is the P2 acknowledgement target?","expected_outcome":"answer","expected_terms":["two","hours"],"expected_source":"Customer Support SLA"},
+
+    {"id":"orion-01","question":"Which Python version does Orion run?","expected_outcome":"answer","expected_terms":["3.12"],"expected_source":"Project Orion Runbook","channel_id":"C_ENGINEERING"},
+    {"id":"orion-02","question":"Which web framework does Project Orion use?","expected_outcome":"answer","expected_terms":["FastAPI"],"expected_source":"Project Orion Runbook","channel_id":"C_ENGINEERING"},
+    {"id":"orion-03","question":"Where are Orion production alerts handled?","expected_outcome":"answer","expected_terms":["eng-oncall"],"expected_source":"Project Orion Runbook","channel_id":"C_ENGINEERING"},
+    {"id":"orion-deny-01","question":"Which Python version does Orion run?","expected_outcome":"refuse","acl_case":true,"channel_id":"C_SALES"},
+    {"id":"orion-deny-02","question":"What is Orion's deployment region?","expected_outcome":"refuse","acl_case":true,"channel_id":"C_PEOPLE"},
+
+    {"id":"sales-01","question":"How much discount may an account executive approve?","expected_outcome":"answer","expected_terms":["10","percent"],"expected_source":"Sales Discount Rules","channel_id":"C_SALES"},
+    {"id":"sales-02","question":"Who approves a discount over 10 percent?","expected_outcome":"answer","expected_terms":["VP of Sales"],"expected_source":"Sales Discount Rules","channel_id":"C_SALES"},
+    {"id":"sales-deny-01","question":"Who approves a discount over 10 percent?","expected_outcome":"refuse","acl_case":true,"channel_id":"C_ENGINEERING"},
+    {"id":"sales-deny-02","question":"Where must discounts be recorded?","expected_outcome":"refuse","acl_case":true,"channel_id":"C_PEOPLE"},
+
+    {"id":"people-01","question":"When must an interview scorecard be submitted?","expected_outcome":"answer","expected_terms":["24","hours"],"expected_source":"People Team Interview Process","channel_id":"C_PEOPLE"},
+    {"id":"people-deny-01","question":"Who owns the final hiring recommendation?","expected_outcome":"refuse","acl_case":true,"channel_id":"C_GENERAL"},
+
+    {"id":"alice-01","question":"Which seat does Alice prefer?","expected_outcome":"answer","expected_terms":["aisle"],"expected_source":"Alice Travel Preferences","user_id":"U_ALICE"},
+    {"id":"alice-deny-01","question":"Which meal does Alice prefer?","expected_outcome":"refuse","acl_case":true,"user_id":"U_BOB"},
+    {"id":"bob-01","question":"What is Bob's private launch codename?","expected_outcome":"answer","expected_terms":["Cedar"],"expected_source":"Bob Private Project Notes","user_id":"U_BOB"},
+    {"id":"bob-deny-01","question":"When is Bob's private rehearsal?","expected_outcome":"refuse","acl_case":true,"user_id":"U_ALICE"},
+
+    {"id":"unknown-01","question":"What is the office parking reimbursement rate?","expected_outcome":"refuse"},
+    {"id":"unknown-02","question":"What is the company maternity leave duration?","expected_outcome":"refuse"},
+    {"id":"unknown-03","question":"What is the guest Wi-Fi password?","expected_outcome":"refuse"},
+    {"id":"workspace-deny-01","question":"How many paid leave days do employees receive?","expected_outcome":"refuse","acl_case":true,"workspace_mode":"other"}
+  ]
+}

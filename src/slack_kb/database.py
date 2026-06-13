@@ -272,3 +272,19 @@ class Database:
                     ),
                 ).fetchall()
             )
+
+    def purge_workspace(self, workspace_id: str) -> None:
+        """Remove an isolated synthetic tenant created by the evaluation runner."""
+        with self.pool.connection() as connection, connection.transaction():
+            connection.execute(
+                "delete from public.conversation_messages where workspace_id = %s",
+                (workspace_id,),
+            )
+            connection.execute(
+                "delete from public.ingestion_jobs where workspace_id = %s",
+                (workspace_id,),
+            )
+            connection.execute(
+                "delete from public.documents where workspace_id = %s",
+                (workspace_id,),
+            )

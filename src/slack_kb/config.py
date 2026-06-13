@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     openai_embedding_model: str = "text-embedding-3-small"
     embedding_dimensions: int = 1536
     retrieval_limit: int = 8
-    min_similarity: float = 0.42
+    min_similarity: float = 0.35
     log_level: str = "INFO"
     api_host: str = "127.0.0.1"
     api_port: int = 8000

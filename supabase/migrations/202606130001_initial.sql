@@ -88,7 +88,7 @@ create or replace function public.match_authorized_chunks(
   request_workspace_id text,
   request_user_id text,
   request_channel_id text,
-  match_threshold double precision default 0.42,
+  match_threshold double precision default 0.35,
   match_count integer default 8
 )
 returns table (

@@ -26,6 +26,7 @@ Exit gate: one document can be added and queried end-to-end in Slack.
 
 ## Phase 2 - Retrieval quality
 
+- Status: complete on the synthetic golden dataset.
 - Build a 40-60 question golden dataset with answerable and unanswerable cases.
 - Tune chunk size, overlap, similarity threshold, lexical weighting, and top-k.
 - Add contextual chunk headers and optional reranking.
@@ -34,6 +35,10 @@ Exit gate: one document can be added and queried end-to-end in Slack.
 
 Exit gate: at least 80% grounded answer score on the demo dataset and zero ACL
 leaks in negative tests.
+
+Baseline: 100% grounded score, 100% refusal precision, zero ACL leaks, and
+3.899-second p95 latency across 45 cases. See
+[`evals/BASELINE.md`](evals/BASELINE.md).
 
 ## Phase 3 - Slack UX and knowledge operations
 

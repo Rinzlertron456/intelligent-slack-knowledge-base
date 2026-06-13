@@ -19,6 +19,7 @@ The product contract is intentionally strict:
 - LangGraph retrieval, evidence gate, generation, and citation validation.
 - Personal, channel-backed team, and organisation scopes.
 - Auto-tagging, source citations, summaries, ingestion status, and safe refusal.
+- A 45-case quality and access-control evaluation harness.
 
 ## Architecture
 
@@ -127,3 +128,16 @@ or screenshot.
 ## Delivery phases
 
 See [PHASES.md](PHASES.md) for the rubric-driven build plan and demo gates.
+
+## Evaluation
+
+With Supabase running and migrations applied:
+
+```powershell
+uv run slack-kb-eval
+```
+
+The evaluator fails the run below 80% grounded score or on any ACL leak, and
+reports answer accuracy, citation validity, refusal precision, and latency.
+The current synthetic baseline is documented in
+[evals/BASELINE.md](evals/BASELINE.md).
