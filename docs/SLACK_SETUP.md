@@ -57,6 +57,20 @@ Test:
 Continue a follow-up question in the bot's reply thread to demonstrate isolated
 multi-turn memory.
 
+Set `ORG_ADMIN_USER_IDS` to a comma-separated list of Slack user IDs allowed to
+publish organisation-wide knowledge. An empty list disables org ingestion.
+
+To ingest a past Slack thread, copy its message permalink and submit it from the
+same channel:
+
+```text
+@Knowledge Base add team https://your-workspace.slack.com/archives/C.../p...
+```
+
+The same-channel restriction prevents a user from using the bot to move private
+channel history into another channel. Direct messages support personal Q&A and
+personal ingestion without requiring an `@mention`.
+
 ## Verification checklist
 
 - `/knowledge help` returns command guidance.

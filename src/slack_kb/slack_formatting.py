@@ -22,4 +22,5 @@ HELP_TEXT = """*Intelligent Knowledge Base*
 • `/knowledge status`
 
 You can also mention me with the same command. Attach a PDF, DOCX, TXT, or Markdown
-file and write `add personal`, `add team`, or `add org`."""
+file and write `add personal`, `add team`, or `add org`. A Slack message
+permalink ingests its full thread and must be submitted from the same channel."""

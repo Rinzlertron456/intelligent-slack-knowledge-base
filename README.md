@@ -15,6 +15,7 @@ The product contract is intentionally strict:
 
 - Slack Socket Mode with `/knowledge` and `@mention` interactions.
 - PDF, DOCX, text, Markdown, URL, and Slack file ingestion.
+- Same-channel past Slack-thread ingestion and direct-message interaction.
 - OpenAI embeddings with Supabase Postgres and pgvector.
 - LangGraph retrieval, evidence gate, generation, and citation validation.
 - Personal, channel-backed team, and organisation scopes.
@@ -93,6 +94,7 @@ the same workspace.
 /knowledge help
 /knowledge add personal My note text
 /knowledge add team https://example.com/handbook
+/knowledge add team https://workspace.slack.com/archives/C.../p...
 /knowledge ask What is our leave policy?
 /knowledge summarize <document-id>
 /knowledge status
@@ -118,6 +120,9 @@ conversation context.
 
 `team` ingestion is rejected in direct messages because a DM is not a team
 knowledge boundary.
+
+Organisation-wide ingestion is denied unless the Slack user ID is listed in
+`ORG_ADMIN_USER_IDS`.
 
 ## Secret handling
 

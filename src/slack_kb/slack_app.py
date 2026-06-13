@@ -16,6 +16,7 @@ from slack_kb.models import KnowledgeScope, RequestContext
 from slack_kb.openai_service import OpenAIService
 from slack_kb.parsers import parse_file, parse_plain_text, parse_url
 from slack_kb.slack_formatting import HELP_TEXT, format_answer
+from slack_kb.slack_threads import is_slack_permalink, load_slack_thread
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class SlackKnowledgeApp:
 
     def _register_handlers(self) -> None:
         @self.app.command("/knowledge")
-        def knowledge_command(ack, command, respond):
+        def knowledge_command(ack, command, respond, client):
             ack()
             try:
                 parsed = parse_command(command.get("text", ""))
@@ -54,7 +55,14 @@ class SlackKnowledgeApp:
                 thread_key=f"slash:{command['channel_id']}:{command['user_id']}",
             )
             respond("Working on it...", response_type="ephemeral")
-            self.executor.submit(self._run_command, parsed, context, respond, None, None)
+            self.executor.submit(
+                self._run_command,
+                parsed,
+                context,
+                respond,
+                client,
+                None,
+            )
 
         @self.app.event("app_mention")
         def app_mention(ack, event, client, body):
@@ -89,6 +97,35 @@ class SlackKnowledgeApp:
                 event.get("files") or [],
             )
 
+        @self.app.event("message")
+        def direct_message(ack, event, client, body):
+            ack()
+            if (
+                event.get("channel_type") != "im"
+                or event.get("bot_id")
+                or event.get("subtype")
+            ):
+                return
+            try:
+                parsed = parse_command(event.get("text", ""))
+            except ValueError as error:
+                client.chat_postMessage(channel=event["channel"], text=str(error))
+                return
+            context = RequestContext(
+                workspace_id=body["team_id"],
+                user_id=event["user"],
+                channel_id=event["channel"],
+                thread_key=event.get("thread_ts") or event["ts"],
+            )
+            self.executor.submit(
+                self._run_command,
+                parsed,
+                context,
+                None,
+                client,
+                event.get("files") or [],
+            )
+
     def _run_command(
         self,
         parsed: ParsedCommand,
@@ -98,7 +135,9 @@ class SlackKnowledgeApp:
         files: list[dict[str, Any]] | None,
     ) -> None:
         try:
-            output = self._execute(parsed, context, files or [])
+            output = self._execute(parsed, context, files or [], client)
+        except (PermissionError, ValueError) as error:
+            output = str(error)
         except Exception:
             LOGGER.exception("Slack command failed", extra={"action": parsed.action})
             output = "I couldn't complete that request. Check the ingestion status or service logs."
@@ -118,6 +157,7 @@ class SlackKnowledgeApp:
         parsed: ParsedCommand,
         context: RequestContext,
         files: list[dict[str, Any]],
+        client,
     ) -> str:
         if parsed.action == "help":
             return HELP_TEXT
@@ -155,11 +195,18 @@ class SlackKnowledgeApp:
             for file_info in files:
                 document_ids.append(self._ingest_slack_file(context, scope, file_info))
             if parsed.argument:
-                payload = (
-                    parse_url(parsed.argument)
-                    if parsed.argument.startswith(("https://", "http://"))
-                    else parse_plain_text(parsed.argument)
-                )
+                if is_slack_permalink(parsed.argument):
+                    if client is None:
+                        raise ValueError("Slack thread ingestion requires a Slack client")
+                    payload = load_slack_thread(
+                        client=client,
+                        permalink=parsed.argument,
+                        request_channel_id=context.channel_id,
+                    )
+                elif parsed.argument.startswith(("https://", "http://")):
+                    payload = parse_url(parsed.argument)
+                else:
+                    payload = parse_plain_text(parsed.argument)
                 document_ids.append(
                     self.ingestion.ingest(context=context, scope=scope, payload=payload)
                 )

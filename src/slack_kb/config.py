@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     database_url: SecretStr
     slack_bot_token: SecretStr = Field(default=SecretStr(""))
     slack_app_token: SecretStr = Field(default=SecretStr(""))
+    org_admin_user_ids: str = ""
 
     openai_chat_model: str = "gpt-5-mini"
     openai_embedding_model: str = "text-embedding-3-small"
@@ -38,6 +39,14 @@ class Settings(BaseSettings):
             raise ValueError("SLACK_BOT_TOKEN must be a Slack bot token")
         if not self.slack_app_token.get_secret_value().startswith("xapp-"):
             raise ValueError("SLACK_APP_TOKEN must be a Socket Mode app token")
+
+    @property
+    def org_admins(self) -> set[str]:
+        return {
+            user_id.strip()
+            for user_id in self.org_admin_user_ids.split(",")
+            if user_id.strip()
+        }
 
 
 @lru_cache

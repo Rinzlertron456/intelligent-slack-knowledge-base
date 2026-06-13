@@ -42,6 +42,8 @@ Baseline: 100% grounded score, 100% refusal precision, zero ACL leaks, and
 
 ## Phase 3 - Slack UX and knowledge operations
 
+- Status: direct messages, safe Slack-thread ingestion, and org publishing
+  controls implemented; interactive modals and document lifecycle actions remain.
 - Add message shortcut and modal-based scope selection.
 - Add App Home: recently indexed items, failed jobs, tags, and help.
 - Support Slack thread ingestion by permalink.

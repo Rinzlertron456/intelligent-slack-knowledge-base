@@ -23,7 +23,11 @@ def main() -> None:
     database.open()
     openai = OpenAIService(settings)
     answer_graph = AnswerGraph(database, openai, settings)
-    ingestion = IngestionService(database, openai)
+    ingestion = IngestionService(
+        database,
+        openai,
+        org_admin_user_ids=settings.org_admins,
+    )
     app = App(token=settings.slack_bot_token.get_secret_value())
     SlackKnowledgeApp(
         app=app,

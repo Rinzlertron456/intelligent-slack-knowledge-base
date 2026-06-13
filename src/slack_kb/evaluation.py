@@ -127,7 +127,11 @@ def run(dataset_path: Path, *, limit: int | None = None) -> dict[str, Any]:
 
     try:
         openai = OpenAIService(settings)
-        ingestion = IngestionService(database, openai)
+        ingestion = IngestionService(
+            database,
+            openai,
+            org_admin_user_ids={"U_ADMIN"},
+        )
         graph = AnswerGraph(database, openai, settings)
 
         for document in dataset["documents"]:
