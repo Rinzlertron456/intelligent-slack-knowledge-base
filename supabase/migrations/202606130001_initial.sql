@@ -1,3 +1,4 @@
+create schema if not exists extensions;
 create extension if not exists vector with schema extensions;
 create extension if not exists pgcrypto;
 
@@ -77,10 +78,22 @@ create index if not exists conversation_lookup_idx
     workspace_id, channel_id, thread_key, user_id, created_at desc
   );
 
-revoke all on table public.documents from anon, authenticated;
-revoke all on table public.chunks from anon, authenticated;
-revoke all on table public.conversation_messages from anon, authenticated;
-revoke all on table public.ingestion_jobs from anon, authenticated;
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    revoke all on table public.documents from anon;
+    revoke all on table public.chunks from anon;
+    revoke all on table public.conversation_messages from anon;
+    revoke all on table public.ingestion_jobs from anon;
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    revoke all on table public.documents from authenticated;
+    revoke all on table public.chunks from authenticated;
+    revoke all on table public.conversation_messages from authenticated;
+    revoke all on table public.ingestion_jobs from authenticated;
+  end if;
+end
+$$;
 
 create or replace function public.match_authorized_chunks(
   query_embedding extensions.vector(1536),

@@ -1,3 +1,6 @@
+from collections.abc import Callable
+from contextlib import AbstractAsyncContextManager
+
 from fastapi import FastAPI, HTTPException
 from psycopg import Error as PostgresError
 
@@ -5,14 +8,7 @@ from slack_kb import __version__
 from slack_kb.config import get_settings
 from slack_kb.database import Database
 
-app = FastAPI(
-    title="Intelligent Slack Knowledge Base",
-    version=__version__,
-    description="Operational API for the Slack-native knowledge assistant.",
-)
 
-
-@app.get("/", tags=["system"])
 def service_info() -> dict[str, str]:
     return {
         "service": "intelligent-slack-knowledge-base",
@@ -20,12 +16,10 @@ def service_info() -> dict[str, str]:
     }
 
 
-@app.get("/healthz", tags=["system"])
 def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/readyz", tags=["system"])
 def readiness() -> dict[str, str]:
     settings = get_settings()
     database = Database(settings.database_url.get_secret_value())
@@ -38,6 +32,25 @@ def readiness() -> dict[str, str]:
     finally:
         database.close()
     return {"status": "ready"}
+
+
+Lifespan = Callable[[FastAPI], AbstractAsyncContextManager[None]]
+
+
+def create_app(*, lifespan: Lifespan | None = None) -> FastAPI:
+    application = FastAPI(
+        title="Intelligent Slack Knowledge Base",
+        version=__version__,
+        description="Operational API for the Slack-native knowledge assistant.",
+        lifespan=lifespan,
+    )
+    application.add_api_route("/", service_info, methods=["GET"], tags=["system"])
+    application.add_api_route("/healthz", health, methods=["GET"], tags=["system"])
+    application.add_api_route("/readyz", readiness, methods=["GET"], tags=["system"])
+    return application
+
+
+app = create_app()
 
 
 def run() -> None:

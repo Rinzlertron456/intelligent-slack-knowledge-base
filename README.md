@@ -149,3 +149,9 @@ uv run slack-kb-scale-smoke
 
 See [docs/EVALUATION_AUDIT.md](docs/EVALUATION_AUDIT.md) for live Slack evidence
 and the criterion-by-criterion completion audit.
+
+## Render deployment
+
+The repository includes `render.yaml` for an always-on Render deployment that
+runs FastAPI and Slack Socket Mode in one service with managed PostgreSQL and
+pgvector. See [docs/RENDER_DEPLOYMENT.md](docs/RENDER_DEPLOYMENT.md).

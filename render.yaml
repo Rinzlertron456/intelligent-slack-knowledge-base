@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: intelligent-slack-knowledge-base
+    runtime: python
+    plan: starter
+    region: singapore
+    branch: main
+    autoDeploy: true
+    buildCommand: uv sync --frozen --no-dev
+    startCommand: uv run uvicorn slack_kb.render_app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /readyz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.11
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: SLACK_BOT_TOKEN
+        sync: false
+      - key: SLACK_APP_TOKEN
+        sync: false
+      - key: ORG_ADMIN_USER_IDS
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: intelligent-slack-kb-db
+          property: connectionString
+      - key: OPENAI_CHAT_MODEL
+        value: gpt-5-mini
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small
+      - key: EMBEDDING_DIMENSIONS
+        value: "1536"
+      - key: RETRIEVAL_LIMIT
+        value: "8"
+      - key: MIN_SIMILARITY
+        value: "0.35"
+      - key: LOG_LEVEL
+        value: INFO
+
+databases:
+  - name: intelligent-slack-kb-db
+    databaseName: intelligent_slack_kb
+    user: intelligent_slack_kb
+    plan: basic-256mb
+    region: singapore
+    postgresMajorVersion: "16"
