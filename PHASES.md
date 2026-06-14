@@ -65,13 +65,26 @@ Status: complete.
 
 - Public repository and buildathon submission Markdown.
 - Setup, architecture, demo, evaluation, and security documentation.
-- 24 passing tests, Ruff clean, live Slack bot, and ready FastAPI service.
+- 25 passing tests, Ruff clean, live Slack bot, and ready FastAPI service.
 
 Exit gate: code, documentation, reproducible evidence, and live workspace
 integration are available.
 
-## Post-submission backlog
+## Phase 6 - Managed deployment
 
-Hosted deployment, App Home, modals, OCR, lifecycle controls, rate limiting,
-audit dashboards, and a React admin UI are optional production enhancements, not
-gaps in the evaluated buildathon workflow.
+Status: deployment-ready; cloud provisioning pending.
+
+- Combined FastAPI and Slack Socket Mode Render runtime.
+- Portable pgvector migration for managed PostgreSQL.
+- Render Blueprint with automatic GitHub deploys.
+- Local verification of the exact production entrypoint and live Slack event.
+
+Exit gate: paid Render web and database resources are live, `/readyz` passes,
+and a Slack command is answered by the cloud process with the local process
+stopped.
+
+## Production hardening backlog
+
+App Home, modals, OCR, lifecycle controls, rate limiting, alerting, audit
+dashboards, backup restore drills, high availability, and a React admin UI are
+production enhancements, not gaps in the evaluated buildathon workflow.

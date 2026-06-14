@@ -39,10 +39,12 @@ uv run slack-kb-scale-smoke
 
 ## Current runtime
 
-- FastAPI readiness: `http://127.0.0.1:8000/readyz`
+- FastAPI readiness: verified with the Render entrypoint at
+  `http://127.0.0.1:8010/readyz`
 - Supabase Postgres: local Docker stack
 - Slack transport: Socket Mode
 - Workspace channel: `#all-buildathon-slack-bot`
+- Cloud deployment: Render-ready; paid resource provisioning pending
 
 Secrets remain only in ignored local environment files and are not included in
 this audit.

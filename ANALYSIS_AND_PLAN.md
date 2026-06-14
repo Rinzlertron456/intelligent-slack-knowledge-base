@@ -7,7 +7,9 @@
 ## Executive summary
 
 The buildathon solution is complete and running end to end in the target Slack
-workspace. It is a permission-aware RAG system rather than a generic chatbot:
+workspace. Production deployment is prepared and verified locally, but the paid
+Render resources are not provisioned yet. It is a permission-aware RAG system
+rather than a generic chatbot:
 Slack identity defines the request context, PostgreSQL filters inaccessible
 knowledge before generation, LangGraph coordinates retrieval and evidence gates,
 and uncited or weakly supported answers are refused.
@@ -120,9 +122,22 @@ Complete:
 - Public project repository.
 - Buildathon submission Markdown.
 - Architecture, setup, demo, security, phase, and evaluation documentation.
-- 24 passing unit tests.
+- 25 passing unit tests.
 - Ruff clean.
 - Live Slack bot and FastAPI readiness verified.
+
+### Phase 6 - Production operation
+
+In progress. The repository now contains an always-on Render design with:
+
+- One FastAPI and Slack Socket Mode web process.
+- Managed PostgreSQL with pgvector.
+- Startup migrations and health/readiness checks.
+- Automatic deploys from GitHub `main`.
+
+The exact Render entrypoint has passed the full test suite, lint, readiness, and
+a live Slack mention. This phase becomes deployed only after the Render service
+and database are provisioned and cloud Slack behavior is verified.
 
 ## Live verification evidence
 
@@ -148,14 +163,15 @@ uv run slack-kb-eval --output evals/latest-report.json
 uv run slack-kb-scale-smoke
 ```
 
-## Optional post-submission enhancements
+## Production hardening backlog
 
-These are not required for the evaluated buildathon solution:
+These are not required for the evaluated buildathon solution, but they remain
+real production work:
 
-- Hosted worker and managed Supabase deployment.
 - App Home and modal-based content administration.
 - OCR and table-aware extraction.
-- Audit-log dashboard, retention controls, and lifecycle actions.
+- Rate limiting, alerting, audit dashboards, retention, and lifecycle actions.
+- Backup restore drills, high availability, and documented incident response.
 - Authenticated React administration UI.
 
 The current system is intentionally Slack-first; a React frontend would add
