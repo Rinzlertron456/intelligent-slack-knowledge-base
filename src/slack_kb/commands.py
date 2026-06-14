@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from slack_kb.models import KnowledgeScope
+
+TRAILING_APP_ATTRIBUTION = re.compile(
+    r"\s+(?:\*|_)?Sent using(?:\*|_)?\s+<@[A-Z0-9]+(?:\|[^>]+)?>\s*$",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -13,7 +19,7 @@ class ParsedCommand:
 
 
 def parse_command(text: str) -> ParsedCommand:
-    stripped = text.strip()
+    stripped = TRAILING_APP_ATTRIBUTION.sub("", text).strip()
     if not stripped:
         return ParsedCommand("help")
     action, _, remainder = stripped.partition(" ")

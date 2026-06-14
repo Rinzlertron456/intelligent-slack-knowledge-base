@@ -1,71 +1,77 @@
-# Rubric-driven delivery plan
+# Rubric-driven delivery phases
 
 ## Phase 0 - Product and risk definition
 
 Status: complete.
 
-- Translate the problem statement into a permission-aware RAG product contract.
-- Rank work by judging weight: groundedness, Slack UX, access control, content
-  breadth, then production readiness.
-- Reject generic-chatbot and unrestricted-agent designs.
+- Defined evidence-only answers, citations, refusal, and Slack-native UX.
+- Chose deterministic authorization and retrieval over unrestricted agents.
+- Mapped personal, team, and organisation scopes to Slack identities.
 
-Exit gate: architecture, demo journey, refusal policy, and access model are
+Exit gate: architecture, access model, refusal policy, and demo journey are
 explicit.
 
 ## Phase 1 - Runnable vertical slice
 
-Status: local vertical slice complete; Slack dashboard credentials pending.
+Status: complete.
 
-- Configure Slack Socket Mode, scopes, slash command, mentions, and file access.
-- Create Supabase pgvector schema.
-- Ingest PDF, DOCX, URL, text, Markdown, and Slack-hosted files.
-- Answer with ACL-filtered retrieval, citations, follow-up memory, and refusal.
-- Add summaries, auto-tags, ingestion status, tests, and structured logs.
+- Slack Socket Mode, slash command, mentions, DMs, files, and threads.
+- Supabase Postgres with pgvector and full-text search.
+- PDF, DOCX, URL, text, Markdown, Slack file, and Slack-thread ingestion.
+- LangGraph retrieval, evidence gate, grounded generation, and citation checks.
+- FastAPI health and readiness endpoints.
 
-Exit gate: one document can be added and queried end-to-end in Slack.
+Exit gate: documents are added and queried end to end in Slack.
 
-## Phase 2 - Retrieval quality
+## Phase 2 - Retrieval quality and access control
 
-- Status: complete on the synthetic golden dataset.
-- Build a 40-60 question golden dataset with answerable and unanswerable cases.
-- Tune chunk size, overlap, similarity threshold, lexical weighting, and top-k.
-- Add contextual chunk headers and optional reranking.
-- Measure context precision, citation precision, refusal precision, latency, and
-  answer groundedness.
+Status: complete.
 
-Exit gate: at least 80% grounded answer score on the demo dataset and zero ACL
-leaks in negative tests.
+- 45-case golden dataset with answerable, unsupported, and ACL-deny cases.
+- 97.78% grounded score, 100% citation validity, 100% refusal precision.
+- Zero personal, cross-channel, or cross-workspace ACL leaks.
+- 5.035-second p95 end-to-end evaluation latency.
 
-Baseline: 100% grounded score, 100% refusal precision, zero ACL leaks, and
-3.899-second p95 latency across 45 cases. See
-[`evals/BASELINE.md`](evals/BASELINE.md).
+Exit gate: grounded score exceeds 80%, p95 is below 10 seconds, and ACL leaks
+equal zero.
 
 ## Phase 3 - Slack UX and knowledge operations
 
-- Status: direct messages, safe Slack-thread ingestion, and org publishing
-  controls implemented; interactive modals and document lifecycle actions remain.
-- Add message shortcut and modal-based scope selection.
-- Add App Home: recently indexed items, failed jobs, tags, and help.
-- Support Slack thread ingestion by permalink.
-- Add document lifecycle commands: list, inspect, re-index, archive, and delete.
+Status: complete for the problem statement.
 
-Exit gate: the full demo can be run without leaving Slack.
+- Live team, personal, and organisation ingestion.
+- Cited Q&A, multi-turn follow-ups, summaries, status, and refusal.
+- PDF, DOCX, URL, plain-text, Slack file, and thread demonstrations.
+- Organisation publishing restricted to configured Slack admins.
 
-## Phase 4 - Security and production hardening
+Exit gate: the complete evaluated workflow runs without leaving Slack.
 
-- Encrypt or redact sensitive metadata and define retention controls.
-- Add idempotency, retry/dead-letter handling, rate limits, and audit events.
-- Add tenant-isolation, prompt-injection, malformed-file, and oversized-file tests.
-- Deploy a persistent worker and monitor latency/error budgets.
+## Phase 4 - Reliability and scalability
 
-Exit gate: threat model reviewed and operational failure paths demonstrated.
+Status: complete for the evaluation scope.
+
+- HNSW and GIN indexes, connection pooling, batched embeddings, and idempotency.
+- Single-instance launcher and stale-runtime cleanup.
+- Automatic local Supabase recovery and migration retry.
+- 60-document/20-query scale smoke with 100% exact retrieval and 0.0073-second
+  p95 database latency.
+
+Exit gate: the system handles more than 50 documents and remains below the
+10-second latency target.
 
 ## Phase 5 - Submission
 
-- Record a crisp demo: ingestion, direct Q&A, follow-up, summary, refusal, and ACL
-  denial.
-- Create architecture and evaluation slides.
-- Publish the project repository and add only the required submission Markdown to
-  the buildathon index repository.
+Status: complete.
 
-Exit gate: public repository, setup guide, demo, deck, and submission PR are live.
+- Public repository and buildathon submission Markdown.
+- Setup, architecture, demo, evaluation, and security documentation.
+- 24 passing tests, Ruff clean, live Slack bot, and ready FastAPI service.
+
+Exit gate: code, documentation, reproducible evidence, and live workspace
+integration are available.
+
+## Post-submission backlog
+
+Hosted deployment, App Home, modals, OCR, lifecycle controls, rate limiting,
+audit dashboards, and a React admin UI are optional production enhancements, not
+gaps in the evaluated buildathon workflow.

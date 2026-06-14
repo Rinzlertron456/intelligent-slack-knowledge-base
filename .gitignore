@@ -19,6 +19,7 @@ htmlcov/
 # Local runtime data
 .data/
 logs/
+.run/
 
 # Editors and OS
 .vscode/

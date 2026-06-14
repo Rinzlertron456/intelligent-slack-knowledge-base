@@ -27,6 +27,7 @@ slack-kb = "slack_kb.main:main"
 slack-kb-api = "slack_kb.api:run"
 slack-kb-eval = "slack_kb.evaluation:main"
 slack-kb-migrate = "slack_kb.migrate:main"
+slack-kb-scale-smoke = "slack_kb.scale_smoke:main"
 
 [dependency-groups]
 dev = [

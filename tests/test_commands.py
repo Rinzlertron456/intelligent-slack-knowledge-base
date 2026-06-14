@@ -26,3 +26,28 @@ def test_add_accepts_attached_file_without_text() -> None:
 def test_add_requires_scope() -> None:
     with pytest.raises(ValueError):
         parse_command("add")
+
+
+@pytest.mark.parametrize(
+    "attribution",
+    [
+        "*Sent using* <@U0BB60SRM9N>",
+        "_Sent using_ <@U0BB60SRM9N|ChatGPT>",
+    ],
+)
+def test_trailing_app_attribution_is_ignored(attribution: str) -> None:
+    command = parse_command(
+        "summarize 1a63c52d-be12-45c3-a1f5-1acd474b7e6b\n" + attribution
+    )
+
+    assert command.action == "summarize"
+    assert command.argument == "1a63c52d-be12-45c3-a1f5-1acd474b7e6b"
+
+
+def test_inline_app_attribution_is_ignored() -> None:
+    command = parse_command(
+        "summarize 1a63c52d-be12-45c3-a1f5-1acd474b7e6b "
+        "*Sent using* <@U0BB60SRM9N>"
+    )
+
+    assert command.argument == "1a63c52d-be12-45c3-a1f5-1acd474b7e6b"

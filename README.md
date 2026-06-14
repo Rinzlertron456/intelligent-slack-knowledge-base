@@ -11,7 +11,7 @@ The product contract is intentionally strict:
 - Weak evidence produces an explicit refusal instead of a plausible guess.
 - Conversation memory is isolated by workspace, channel, Slack thread, and user.
 
-## Phase 1 capabilities
+## Capabilities
 
 - Slack Socket Mode with `/knowledge` and `@mention` interactions.
 - PDF, DOCX, text, Markdown, URL, and Slack file ingestion.
@@ -47,7 +47,7 @@ was added and can only be retrieved from that same channel. Personal knowledge
 requires the same Slack user ID. Organisation knowledge is available throughout
 the same workspace.
 
-## Local setup
+## Quick start
 
 1. Install Python through `uv` and sync dependencies:
 
@@ -72,21 +72,15 @@ the same workspace.
    and create an app-level token with `connections:write`.
    See [docs/SLACK_SETUP.md](docs/SLACK_SETUP.md).
 
-5. Start the bot:
+5. Start the complete local stack:
 
    ```powershell
-   uv run slack-kb
+   .\scripts\start-demo.ps1
    ```
 
-6. In a second terminal, start the operational FastAPI backend:
-
-   ```powershell
-   uv run slack-kb-api
-   ```
-
-   Health endpoints are available at `/healthz` and `/readyz`. Public query or
-   document-management endpoints are intentionally deferred until authentication
-   is defined; Slack remains the trusted application interface in Phase 1.
+   The script starts or recovers local Supabase, applies migrations, launches
+   FastAPI, and opens one guarded Slack Socket Mode process. Health endpoints are
+   available at `/healthz` and `/readyz`.
 
 ## Slack usage
 
@@ -146,3 +140,12 @@ The evaluator fails the run below 80% grounded score or on any ACL leak, and
 reports answer accuracy, citation validity, refusal precision, and latency.
 The current synthetic baseline is documented in
 [evals/BASELINE.md](evals/BASELINE.md).
+
+Verify the 50-document scalability requirement:
+
+```powershell
+uv run slack-kb-scale-smoke
+```
+
+See [docs/EVALUATION_AUDIT.md](docs/EVALUATION_AUDIT.md) for live Slack evidence
+and the criterion-by-criterion completion audit.
