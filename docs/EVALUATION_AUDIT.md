@@ -45,8 +45,9 @@ uv run slack-kb-scale-smoke
 - Slack transport: Socket Mode
 - Workspace channel: `#all-buildathon-slack-bot`
 - Live Slack recheck: [June 15 status response](https://buildathon-slack-bot.slack.com/archives/C0BABMD6QV8/p1781493815808619)
-- Cloud deployment: free Render PostgreSQL provisioned; paid web/database
-  deployment blocked by missing Render billing
+- Cloud deployment: free Render PostgreSQL and web service provisioned; Render
+  build succeeds. Runtime awaits the protected database password, and paid
+  always-on plans await billing.
 
 Secrets remain only in ignored local environment files and are not included in
 this audit.

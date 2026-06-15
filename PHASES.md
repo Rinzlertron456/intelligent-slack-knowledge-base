@@ -80,14 +80,16 @@ Status: deployment-ready; account prerequisites pending.
 - Local verification of the exact production entrypoint and live Slack event.
 - Free Render PostgreSQL provisioned for deployment-path validation; it expires
   on July 15, 2026.
+- Free Render web service provisioned; repository build and secret configuration
+  verified in Render.
 
 Exit gate: paid Render web and database resources are live, `/readyz` passes,
 and a Slack command is answered by the cloud process with the local process
 stopped.
 
-Current blocker: Render rejected paid provisioning because the workspace has no
-payment method. Dashboard access is also required once to apply the Blueprint
-and supply secrets that are intentionally absent from git.
+Current blockers: Render rejected paid provisioning because the workspace has
+no payment method, and Dashboard access is required once to copy the database's
+protected Internal Database URL into the service.
 
 ## Production hardening backlog
 

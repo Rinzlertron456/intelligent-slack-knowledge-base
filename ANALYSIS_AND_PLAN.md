@@ -133,13 +133,18 @@ In progress. The repository now contains an always-on Render design with:
 - Automatic deploys from GitHub `main`.
 
 The exact Render entrypoint has passed the full test suite, lint, readiness, and
-a live Slack mention. A free Render PostgreSQL instance was provisioned on
-June 15, 2026 and expires on July 15, 2026. The paid database request was
-rejected because the Render workspace has no payment method.
+a live Slack mention. A free Render PostgreSQL instance and web service were
+provisioned on June 15, 2026. The database expires on July 15, 2026. Render
+successfully cloned and built commit `a19625f`; the OpenAI and Slack secrets are
+configured. Startup is blocked only by the database password, which Render
+exposes through the authenticated Dashboard but not through its API connector.
+The paid database request was rejected because the workspace has no payment
+method.
 
-This phase is not complete yet. The remaining gate is to add Render billing,
-apply the repository Blueprint, configure its four secrets, and verify that the
-cloud process answers Slack while the local process is stopped.
+This phase is not complete yet. The remaining gate is to copy the database's
+Internal Database URL into the web service's `DATABASE_URL`, add Render billing
+for always-on plans, and verify that the cloud process answers Slack while the
+local process is stopped.
 
 ## Live verification evidence
 

@@ -45,11 +45,21 @@ secrets are configured only in Render:
 Render injects `DATABASE_URL` from the managed database. The application applies
 idempotent migrations before opening the Slack connection.
 
+The start command uses `uv run --frozen --no-dev` so production startup never
+resolves or installs development dependencies.
+
 As of June 15, 2026, a temporary free Render PostgreSQL instance exists and
 expires on July 15, 2026. Render rejected the production plans because the
 workspace does not have a payment method. Add billing before applying the
 Blueprint so Render can create the configured Starter web service and
 Basic-256mb database.
+
+A free web service also exists at
+`https://intelligent-slack-knowledge-base.onrender.com`. Its repository build
+succeeds and its OpenAI and Slack secrets are configured. To finish the
+temporary cloud smoke test, open the Render database, copy its Internal Database
+URL, and replace the web service's current passwordless `DATABASE_URL`. Render
+does not expose that password through the automation connector.
 
 ## Verification
 

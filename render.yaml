@@ -7,11 +7,13 @@ services:
     branch: main
     autoDeploy: true
     buildCommand: uv sync --frozen --no-dev
-    startCommand: uv run uvicorn slack_kb.render_app:app --host 0.0.0.0 --port $PORT
+    startCommand: uv run --frozen --no-dev uvicorn slack_kb.render_app:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /readyz
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.11
+      - key: UV_NO_DEV
+        value: "1"
       - key: OPENAI_API_KEY
         sync: false
       - key: SLACK_BOT_TOKEN
