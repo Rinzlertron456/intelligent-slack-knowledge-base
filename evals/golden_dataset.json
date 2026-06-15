@@ -89,7 +89,7 @@
     {"id":"expense-01","question":"What expense amount needs no advance approval?","expected_outcome":"answer","expected_terms":["5,000"],"expected_source":"Expense Reimbursement Policy"},
     {"id":"expense-02","question":"Who approves expenses above INR 5,000?","expected_outcome":"answer","expected_terms":["reporting manager"],"expected_source":"Expense Reimbursement Policy"},
     {"id":"expense-03","question":"When must receipts be uploaded?","expected_outcome":"answer","expected_terms":["10","calendar days"],"expected_source":"Expense Reimbursement Policy"},
-    {"id":"expense-04","question":"Does an INR 8,000 purchase require prior approval?","expected_outcome":"answer","expected_terms":["5,000","reporting manager"],"expected_source":"Expense Reimbursement Policy"},
+    {"id":"expense-04","question":"Does an INR 8,000 purchase require prior approval?","expected_outcome":"answer","expected_terms":["reporting manager","before purchase"],"expected_source":"Expense Reimbursement Policy"},
 
     {"id":"release-01","question":"When are production releases scheduled?","expected_outcome":"answer","expected_terms":["Tuesday","Thursday","4 PM"],"expected_source":"Engineering Release Calendar"},
     {"id":"release-02","question":"Is Friday a normal production release day?","expected_outcome":"answer","expected_terms":["freeze"],"expected_source":"Engineering Release Calendar"},

@@ -52,11 +52,11 @@ document is not retrieved.
 Show `evals/BASELINE.md`:
 
 - 45 cases
-- 97.78% grounded score
+- 100% grounded score
 - 100% citation validity
 - 100% refusal precision
 - zero ACL leaks
-- 5.035-second p95 latency
+- 6.998-second p95 latency
 - 60-document scale smoke with 100% exact retrieval
 
 Close with: "Authorization happens before the LLM, and every answer must survive

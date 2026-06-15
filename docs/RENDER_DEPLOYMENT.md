@@ -45,6 +45,12 @@ secrets are configured only in Render:
 Render injects `DATABASE_URL` from the managed database. The application applies
 idempotent migrations before opening the Slack connection.
 
+As of June 15, 2026, a temporary free Render PostgreSQL instance exists and
+expires on July 15, 2026. Render rejected the production plans because the
+workspace does not have a payment method. Add billing before applying the
+Blueprint so Render can create the configured Starter web service and
+Basic-256mb database.
+
 ## Verification
 
 1. Confirm the Render deploy is live.

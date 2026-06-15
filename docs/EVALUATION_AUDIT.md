@@ -1,6 +1,6 @@
 # Problem Statement 02 - Evaluation Audit
 
-Verified on June 14, 2026 against the running local stack and target Slack app
+Verified on June 15, 2026 against the running local stack and target Slack app
 `A0BABMXDYJW`.
 
 ## Requirement evidence
@@ -22,8 +22,8 @@ Verified on June 14, 2026 against the running local stack and target Slack app
 | Team scope | Channel-bound SQL retrieval; automated cross-channel denial | Pass |
 | Organisation scope | [Admin-published org note](https://buildathon-slack-bot.slack.com/archives/C0BABMD6QV8/p1781370837451759) and cross-context retrieval | Pass |
 | Auto-tagging | OpenAI JSON tags with deterministic heuristic fallback | Pass |
-| At least 80% grounded | 97.78% across 45 cases | Pass |
-| Under 10-second latency | 5.035-second p95 end-to-end evaluation latency | Pass |
+| At least 80% grounded | 100% across 45 cases | Pass |
+| Under 10-second latency | 6.998-second p95 end-to-end evaluation latency | Pass |
 | At least 50 documents | 60-document database smoke, 100% exact retrieval | Pass |
 | Access control | Zero ACL leaks across personal, channel, and workspace negative cases | Pass |
 
@@ -44,7 +44,9 @@ uv run slack-kb-scale-smoke
 - Supabase Postgres: local Docker stack
 - Slack transport: Socket Mode
 - Workspace channel: `#all-buildathon-slack-bot`
-- Cloud deployment: Render-ready; paid resource provisioning pending
+- Live Slack recheck: [June 15 status response](https://buildathon-slack-bot.slack.com/archives/C0BABMD6QV8/p1781493815808619)
+- Cloud deployment: free Render PostgreSQL provisioned; paid web/database
+  deployment blocked by missing Render billing
 
 Secrets remain only in ignored local environment files and are not included in
 this audit.

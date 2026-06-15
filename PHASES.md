@@ -28,9 +28,9 @@ Exit gate: documents are added and queried end to end in Slack.
 Status: complete.
 
 - 45-case golden dataset with answerable, unsupported, and ACL-deny cases.
-- 97.78% grounded score, 100% citation validity, 100% refusal precision.
+- 100% grounded score, answer accuracy, citation validity, and refusal precision.
 - Zero personal, cross-channel, or cross-workspace ACL leaks.
-- 5.035-second p95 end-to-end evaluation latency.
+- 6.998-second p95 end-to-end evaluation latency.
 
 Exit gate: grounded score exceeds 80%, p95 is below 10 seconds, and ACL leaks
 equal zero.
@@ -53,7 +53,7 @@ Status: complete for the evaluation scope.
 - HNSW and GIN indexes, connection pooling, batched embeddings, and idempotency.
 - Single-instance launcher and stale-runtime cleanup.
 - Automatic local Supabase recovery and migration retry.
-- 60-document/20-query scale smoke with 100% exact retrieval and 0.0073-second
+- 60-document/20-query scale smoke with 100% exact retrieval and 0.0017-second
   p95 database latency.
 
 Exit gate: the system handles more than 50 documents and remains below the
@@ -72,16 +72,22 @@ integration are available.
 
 ## Phase 6 - Managed deployment
 
-Status: deployment-ready; cloud provisioning pending.
+Status: deployment-ready; account prerequisites pending.
 
 - Combined FastAPI and Slack Socket Mode Render runtime.
 - Portable pgvector migration for managed PostgreSQL.
 - Render Blueprint with automatic GitHub deploys.
 - Local verification of the exact production entrypoint and live Slack event.
+- Free Render PostgreSQL provisioned for deployment-path validation; it expires
+  on July 15, 2026.
 
 Exit gate: paid Render web and database resources are live, `/readyz` passes,
 and a Slack command is answered by the cloud process with the local process
 stopped.
+
+Current blocker: Render rejected paid provisioning because the workspace has no
+payment method. Dashboard access is also required once to apply the Blueprint
+and supply secrets that are intentionally absent from git.
 
 ## Production hardening backlog
 
