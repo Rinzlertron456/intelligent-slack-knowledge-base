@@ -9,6 +9,7 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_kb.answer_graph import AnswerGraph
 from slack_kb.config import Settings
 from slack_kb.database import Database
+from slack_kb.database import apply_migrations as apply_database_migrations
 from slack_kb.ingestion import IngestionService
 from slack_kb.openai_service import OpenAIService
 from slack_kb.slack_app import SlackKnowledgeApp
@@ -34,12 +35,13 @@ def build_slack_runtime(
     apply_migrations: bool = False,
 ) -> SlackRuntime:
     settings.validate_slack()
-    database = Database(settings.database_url.get_secret_value())
+    database_url = settings.database_url.get_secret_value()
+    if apply_migrations:
+        apply_database_migrations(database_url, migration_directory())
+
+    database = Database(database_url)
     database.open()
     try:
-        if apply_migrations:
-            database.migrate(migration_directory())
-
         openai = OpenAIService(settings)
         answer_graph = AnswerGraph(database, openai, settings)
         ingestion = IngestionService(

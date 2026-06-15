@@ -7,6 +7,7 @@ from typing import Any
 
 from pgvector import Vector
 from pgvector.psycopg import register_vector
+from psycopg import connect
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
@@ -18,6 +19,13 @@ from slack_kb.models import (
     RetrievalHit,
 )
 from slack_kb.security import validate_scope
+
+
+def apply_migrations(database_url: str, migration_dir: Path) -> None:
+    """Bootstrap the schema before opening a pool that requires pgvector."""
+    with connect(database_url, autocommit=True) as connection:
+        for path in sorted(migration_dir.glob("*.sql")):
+            connection.execute(path.read_text(encoding="utf-8"))
 
 
 class Database:
