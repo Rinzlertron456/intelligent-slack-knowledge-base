@@ -1,7 +1,27 @@
 from unittest.mock import Mock
 
 from slack_kb.config import Settings
+from slack_kb.database import configure_connection
 from slack_kb.runtime import build_slack_runtime
+
+
+def test_pool_configures_extension_search_path_before_vector_registration(
+    monkeypatch,
+) -> None:
+    events: list[str] = []
+    connection = Mock()
+    connection.execute.side_effect = lambda _sql: events.append("search-path")
+    monkeypatch.setattr(
+        "slack_kb.database.register_vector",
+        lambda _connection: events.append("register-vector"),
+    )
+
+    configure_connection(connection)
+
+    assert events == ["search-path", "register-vector"]
+    connection.execute.assert_called_once_with(
+        "set search_path to public, extensions"
+    )
 
 
 def test_fresh_database_is_migrated_before_vector_pool_opens(monkeypatch) -> None:

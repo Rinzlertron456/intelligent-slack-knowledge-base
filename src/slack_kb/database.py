@@ -28,6 +28,11 @@ def apply_migrations(database_url: str, migration_dir: Path) -> None:
             connection.execute(path.read_text(encoding="utf-8"))
 
 
+def configure_connection(connection: Any) -> None:
+    connection.execute("set search_path to public, extensions")
+    register_vector(connection)
+
+
 class Database:
     def __init__(self, database_url: str):
         self.pool = ConnectionPool(
@@ -35,7 +40,7 @@ class Database:
             min_size=1,
             max_size=8,
             kwargs={"row_factory": dict_row, "autocommit": True},
-            configure=register_vector,
+            configure=configure_connection,
             open=False,
         )
 
