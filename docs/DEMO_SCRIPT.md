@@ -56,7 +56,7 @@ Show `evals/BASELINE.md`:
 - 100% citation validity
 - 100% refusal precision
 - zero ACL leaks
-- 6.998-second p95 latency
+- 7.613-second p95 latency on the live Render database
 - 60-document scale smoke with 100% exact retrieval
 
 Close with: "Authorization happens before the LLM, and every answer must survive
