@@ -48,18 +48,22 @@ idempotent migrations before opening the Slack connection.
 The start command uses `uv run --frozen --no-dev` so production startup never
 resolves or installs development dependencies.
 
-As of June 15, 2026, a temporary free Render PostgreSQL instance exists and
-expires on July 15, 2026. Render rejected the production plans because the
-workspace does not have a payment method. Add billing before applying the
-Blueprint so Render can create the configured Starter web service and
-Basic-256mb database.
+As of June 16, 2026, the managed Render deployment is live at
+`https://intelligent-slack-knowledge-base.onrender.com` and has passed public
+health, readiness, Slack ingestion, Slack cited Q&A, Render PostgreSQL
+persistence, and OpenAI `200 OK` checks. The application is functionally
+deployed on Render.
 
-A free web service also exists at
-`https://intelligent-slack-knowledge-base.onrender.com`. Its repository build
-succeeds and its OpenAI and Slack secrets are configured. To finish the
-temporary cloud smoke test, open the Render database, copy its Internal Database
-URL, and replace the web service's current passwordless `DATABASE_URL`. Render
-does not expose that password through the automation connector.
+The current limitation is durability, not functionality. The Render PostgreSQL
+instance is still on the free plan and expires on July 15, 2026. An attempted
+upgrade to `basic_256mb` returned HTTP 402 because the workspace has no payment
+method. Add billing, then upgrade the database to the paid `basic-256mb`
+Blueprint plan. Recheck the web service plan afterward; the live service list
+still reports it as `free` even after a `starter` update command returned
+success.
+
+Note: `render.yaml` uses Blueprint plan names such as `basic-256mb`. The Render
+CLI/API uses underscore names such as `basic_256mb` for direct updates.
 
 ## Verification
 
