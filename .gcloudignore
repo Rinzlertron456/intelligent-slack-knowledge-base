@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+.pytest_cache
+.ruff_cache
+.run
+.slack
+__pycache__
+*.py[cod]
+.env
+.env.*
+node_modules
+.vercel

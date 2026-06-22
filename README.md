@@ -155,3 +155,10 @@ and the criterion-by-criterion completion audit.
 The repository includes `render.yaml` for an always-on Render deployment that
 runs FastAPI and Slack Socket Mode in one service with managed PostgreSQL and
 pgvector. See [docs/RENDER_DEPLOYMENT.md](docs/RENDER_DEPLOYMENT.md).
+
+## Google Cloud + Vercel deployment
+
+The repository also includes a Cloud Run container setup plus a tiny Vercel
+status/front-door layer. This is the preferred non-Render deployment path for
+the current build. See
+[docs/GOOGLE_CLOUD_VERCEL_DEPLOYMENT.md](docs/GOOGLE_CLOUD_VERCEL_DEPLOYMENT.md).

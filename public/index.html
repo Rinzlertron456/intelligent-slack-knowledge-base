@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Intelligent Slack Knowledge Base — Status</title>
+    <meta name="description" content="Live status and health dashboard for the Intelligent Slack Knowledge Base — a permission-aware RAG assistant built natively for Slack." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --bg-0: #060811;
+        --bg-1: #0d1224;
+        --surface: rgba(255,255,255,0.04);
+        --surface-hover: rgba(255,255,255,0.07);
+        --border: rgba(255,255,255,0.08);
+        --border-strong: rgba(255,255,255,0.14);
+        --text-primary: #f0f4ff;
+        --text-secondary: #8b97b8;
+        --text-muted: #4a5472;
+        --accent: #6366f1;
+        --accent-glow: rgba(99,102,241,0.3);
+        --green: #22d3a5;
+        --green-glow: rgba(34,211,165,0.25);
+        --red: #f87171;
+        --red-glow: rgba(248,113,113,0.25);
+        --amber: #fbbf24;
+        --amber-glow: rgba(251,191,36,0.25);
+        --radius: 20px;
+        --radius-sm: 12px;
+      }
+
+      html, body {
+        min-height: 100vh;
+        background: var(--bg-0);
+        color: var(--text-primary);
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      /* Animated gradient orbs */
+      body::before, body::after {
+        content: '';
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(120px);
+        pointer-events: none;
+        z-index: 0;
+      }
+      body::before {
+        width: 700px; height: 700px;
+        background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+        top: -200px; right: -200px;
+        animation: drift1 18s ease-in-out infinite alternate;
+      }
+      body::after {
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(34,211,165,0.12) 0%, transparent 70%);
+        bottom: -150px; left: -150px;
+        animation: drift2 22s ease-in-out infinite alternate;
+      }
+
+      @keyframes drift1 {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(-80px, 80px) scale(1.15); }
+      }
+      @keyframes drift2 {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(60px, -60px) scale(1.2); }
+      }
+
+      /* Noise texture overlay */
+      body > .noise {
+        position: fixed;
+        inset: 0;
+        opacity: 0.025;
+        pointer-events: none;
+        z-index: 1;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      }
+
+      .wrapper {
+        position: relative;
+        z-index: 2;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 24px;
+        gap: 32px;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        max-width: 680px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(99,102,241,0.12);
+        border: 1px solid rgba(99,102,241,0.25);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        color: #a5b4fc;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+      .badge::before {
+        content: '';
+        width: 6px; height: 6px;
+        background: #818cf8;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #818cf8;
+        animation: pulse-badge 2s ease-in-out infinite;
+      }
+      @keyframes pulse-badge {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+      }
+
+      h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 40%, #22d3a5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 16px;
+      }
+      .subtitle {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        line-height: 1.65;
+        max-width: 520px;
+        margin: 0 auto;
+      }
+
+      /* Main card */
+      .card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius);
+        padding: 32px;
+        backdrop-filter: blur(24px);
+        box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(255,255,255,0.06) inset;
+        width: min(720px, calc(100vw - 48px));
+        transition: border-color 0.3s;
+      }
+      .card:hover { border-color: rgba(255,255,255,0.18); }
+
+      /* Status grid */
+      .status-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      @media (max-width: 480px) { .status-grid { grid-template-columns: 1fr; } }
+
+      .status-item {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .status-item:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+
+      .status-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border);
+      }
+
+      .status-body { flex: 1; min-width: 0; }
+      .status-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+      .status-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* Dot indicators */
+      .dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .dot.checking { background: var(--amber); box-shadow: 0 0 10px var(--amber-glow); animation: spin-dot 1.2s linear infinite; }
+      .dot.ok       { background: var(--green); box-shadow: 0 0 10px var(--green-glow); animation: glow-pulse 2s ease-in-out infinite; }
+      .dot.bad      { background: var(--red);   box-shadow: 0 0 10px var(--red-glow);   animation: glow-pulse 2s ease-in-out infinite; }
+
+      @keyframes spin-dot {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(0.6); opacity: 0.4; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      @keyframes glow-pulse {
+        0%, 100% { box-shadow: 0 0 8px var(--green-glow); }
+        50% { box-shadow: 0 0 18px var(--green-glow); }
+      }
+
+      .text-ok      { color: var(--green); }
+      .text-bad     { color: var(--red); }
+      .text-checking { color: var(--amber); }
+
+      /* Divider */
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 24px 0;
+      }
+
+      /* Details section */
+      .details-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+      .detail-key {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+      .detail-val {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      /* Commands section */
+      .commands-section {
+        margin-top: 28px;
+        background: rgba(0,0,0,0.25);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+      }
+      .commands-header {
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.03);
+        border-bottom: 1px solid var(--border);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .commands-header span { color: #818cf8; }
+      .command-list {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+        font-size: 0.82rem;
+      }
+      .command-line {
+        color: #94a3b8;
+        padding: 6px 10px;
+        background: rgba(255,255,255,0.02);
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.04);
+      }
+      .command-line .cmd-prefix { color: #6366f1; }
+      .command-line .cmd-arg { color: #22d3a5; }
+
+      /* Footer */
+      .footer {
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .footer a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .footer a:hover { color: var(--text-primary); }
+      .footer-dot { width: 3px; height: 3px; background: var(--text-muted); border-radius: 50%; }
+
+      /* Last checked */
+      .last-checked {
+        margin-top: 16px;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        text-align: right;
+      }
+
+      /* Refresh button */
+      .refresh-btn {
+        background: rgba(99,102,241,0.12);
+        border: 1px solid rgba(99,102,241,0.25);
+        color: #a5b4fc;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .refresh-btn:hover { background: rgba(99,102,241,0.2); border-color: rgba(99,102,241,0.4); }
+      .refresh-btn:active { transform: scale(0.97); }
+      .refresh-btn.spinning svg { animation: spin 0.8s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="wrapper">
+      <header class="header">
+        <div class="badge">Buildathon Problem Statement 02</div>
+        <h1>Intelligent Slack Knowledge Base</h1>
+        <p class="subtitle">
+          A permission-aware RAG assistant built natively for Slack — running on Google Cloud Run,
+          with this status page served by Vercel.
+        </p>
+      </header>
+
+      <main class="card">
+        <!-- Status indicators -->
+        <div class="status-grid">
+          <div class="status-item" id="health-item">
+            <div class="status-icon">🛰️</div>
+            <div class="status-body">
+              <div class="status-label">Backend Health</div>
+              <div class="status-value" id="health-val">
+                <span class="dot checking" id="health-dot"></span>
+                <span id="health-text" class="text-checking">Checking...</span>
+              </div>
+            </div>
+          </div>
+          <div class="status-item" id="ready-item">
+            <div class="status-icon">🗄️</div>
+            <div class="status-body">
+              <div class="status-label">Database Readiness</div>
+              <div class="status-value" id="ready-val">
+                <span class="dot checking" id="ready-dot"></span>
+                <span id="ready-text" class="text-checking">Checking...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meta info -->
+        <div class="details-row">
+          <div class="detail-item">
+            <span class="detail-key">Compute</span>
+            <span class="detail-val">Google Cloud Run · asia-south1</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-key">Front Door</span>
+            <span class="detail-val">Vercel Edge Network</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-key">Slack App</span>
+            <span class="detail-val">Socket Mode · @Knowledge Base</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-key">AI Models</span>
+            <span class="detail-val">gpt-5-mini · text-embedding-3-small</span>
+          </div>
+        </div>
+
+        <div class="last-checked">
+          Last checked: <span id="last-checked-time">—</span>
+          &nbsp;
+          <button class="refresh-btn" id="refresh-btn" onclick="refreshChecks()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Slack commands -->
+        <div class="commands-section">
+          <div class="commands-header">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            <span>Slack</span> Usage
+          </div>
+          <div class="command-list">
+            <div class="command-line"><span class="cmd-prefix">/knowledge</span> <span class="cmd-arg">help</span></div>
+            <div class="command-line"><span class="cmd-prefix">/knowledge</span> add team https://example.com/handbook</div>
+            <div class="command-line"><span class="cmd-prefix">/knowledge</span> add personal My personal note</div>
+            <div class="command-line"><span class="cmd-prefix">/knowledge</span> <span class="cmd-arg">ask</span> What is our leave policy?</div>
+            <div class="command-line"><span class="cmd-prefix">/knowledge</span> status</div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <span>Intelligent Slack Knowledge Base</span>
+        <div class="footer-dot"></div>
+        <a href="https://github.com/Rinzlertron456/intelligent-slack-knowledge-base" target="_blank" rel="noopener">GitHub ↗</a>
+        <div class="footer-dot"></div>
+        <span>React Hyderabad × Masters' Union AI Buildathon</span>
+      </footer>
+    </div>
+
+    <script>
+      const POLL_INTERVAL = 30_000; // 30s auto-refresh
+      let pollTimer = null;
+
+      function setStatus(elemId, dotId, textId, result) {
+        const dot = document.getElementById(dotId);
+        const text = document.getElementById(textId);
+        dot.className = 'dot ' + result.cls;
+        text.textContent = result.label;
+        text.className = 'text-' + result.cls;
+      }
+
+      async function checkEndpoint(path) {
+        try {
+          const res = await fetch(path, { headers: { accept: 'application/json' } });
+          const payload = await res.json().catch(() => ({}));
+          if (res.ok) return { cls: 'ok', label: payload.status || 'ok' };
+          return { cls: 'bad', label: `error (${res.status})` };
+        } catch {
+          return { cls: 'bad', label: 'unreachable' };
+        }
+      }
+
+      async function runChecks() {
+        const [h, r] = await Promise.all([
+          checkEndpoint('/healthz'),
+          checkEndpoint('/readyz'),
+        ]);
+        setStatus('health-item', 'health-dot', 'health-text', h);
+        setStatus('ready-item', 'ready-dot', 'ready-text', r);
+
+        const now = new Date();
+        document.getElementById('last-checked-time').textContent =
+          now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      }
+
+      function refreshChecks() {
+        const btn = document.getElementById('refresh-btn');
+        btn.classList.add('spinning');
+
+        // Reset to checking state
+        ['health', 'ready'].forEach(id => {
+          const dot = document.getElementById(id + '-dot');
+          const text = document.getElementById(id + '-text');
+          dot.className = 'dot checking';
+          text.textContent = 'Checking...';
+          text.className = 'text-checking';
+        });
+
+        clearTimeout(pollTimer);
+        runChecks().finally(() => {
+          btn.classList.remove('spinning');
+          pollTimer = setTimeout(refreshChecks, POLL_INTERVAL);
+        });
+      }
+
+      // Initial load
+      refreshChecks();
+    </script>
+  </body>
+</html>

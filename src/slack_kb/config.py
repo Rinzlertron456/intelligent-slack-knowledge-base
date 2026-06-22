@@ -11,8 +11,15 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    openai_api_key: SecretStr
+    openai_api_key: SecretStr = Field(default=SecretStr(""))
+    gemini_api_key: SecretStr = Field(default=SecretStr(""))
+    gemini_model: str = "gemini-1.5-flash"
+    gemini_embed_model: str = "text-embedding-004"
+    gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai/"
+    gemini_use_adc: bool | None = None
+
     database_url: SecretStr
+
     slack_bot_token: SecretStr = Field(default=SecretStr(""))
     slack_app_token: SecretStr = Field(default=SecretStr(""))
     org_admin_user_ids: str = ""

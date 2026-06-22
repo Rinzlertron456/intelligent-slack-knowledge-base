@@ -26,7 +26,16 @@ class SlackRuntime:
 
 
 def migration_directory() -> Path:
-    return Path(__file__).resolve().parents[2] / "supabase" / "migrations"
+    # Try relative to the package in development mode
+    dev_path = Path(__file__).resolve().parents[2] / "supabase" / "migrations"
+    if dev_path.exists() and any(dev_path.glob("*.sql")):
+        return dev_path
+    # Try relative to the current working directory (in container)
+    container_path = Path.cwd() / "supabase" / "migrations"
+    if container_path.exists() and any(container_path.glob("*.sql")):
+        return container_path
+    # Fallback
+    return Path("/app/supabase/migrations")
 
 
 def build_slack_runtime(
