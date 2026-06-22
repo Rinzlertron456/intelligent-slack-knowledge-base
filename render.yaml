@@ -14,8 +14,6 @@ services:
         value: 3.12.11
       - key: UV_NO_DEV
         value: "1"
-      - key: OPENAI_API_KEY
-        sync: false
       - key: SLACK_BOT_TOKEN
         sync: false
       - key: SLACK_APP_TOKEN
@@ -26,12 +24,10 @@ services:
         fromDatabase:
           name: intelligent-slack-kb-db
           property: connectionString
-      - key: OPENAI_CHAT_MODEL
-        value: gpt-5-mini
-      - key: OPENAI_EMBEDDING_MODEL
-        value: text-embedding-3-small
-      - key: EMBEDDING_DIMENSIONS
-        value: "1536"
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+      - key: GEMINI_EMBED_MODEL
+        value: text-embedding-004
       - key: RETRIEVAL_LIMIT
         value: "8"
       - key: MIN_SIMILARITY

@@ -11,9 +11,9 @@ from slack_bolt import App
 from slack_kb.answer_graph import AnswerGraph
 from slack_kb.commands import ParsedCommand, parse_command
 from slack_kb.database import Database
+from slack_kb.gemini_service import GeminiService
 from slack_kb.ingestion import IngestionService
 from slack_kb.models import KnowledgeScope, RequestContext
-from slack_kb.openai_service import OpenAIService
 from slack_kb.parsers import parse_file, parse_plain_text, parse_url
 from slack_kb.slack_formatting import HELP_TEXT, format_answer
 from slack_kb.slack_threads import is_slack_permalink, load_slack_thread
@@ -27,13 +27,13 @@ class SlackKnowledgeApp:
         *,
         app: App,
         database: Database,
-        openai: OpenAIService,
+        gemini: GeminiService,
         answer_graph: AnswerGraph,
         ingestion: IngestionService,
     ):
         self.app = app
         self.database = database
-        self.openai = openai
+        self.gemini = gemini
         self.answer_graph = answer_graph
         self.ingestion = ingestion
         self.executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="kb-worker")
@@ -179,7 +179,7 @@ class SlackKnowledgeApp:
             )
             if not document:
                 return "That document does not exist or is outside your current knowledge scope."
-            summary = self.openai.summarize(
+            summary = self.gemini.summarize(
                 title=document["title"],
                 content=document["content"],
             )

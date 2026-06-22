@@ -34,7 +34,7 @@ def test_fresh_database_is_migrated_before_vector_pool_opens(monkeypatch) -> Non
         lambda *_args: events.append("migrate"),
     )
     monkeypatch.setattr("slack_kb.runtime.Database", lambda _url: database)
-    monkeypatch.setattr("slack_kb.runtime.OpenAIService", Mock())
+    monkeypatch.setattr("slack_kb.runtime.GeminiService", Mock())
     monkeypatch.setattr("slack_kb.runtime.AnswerGraph", Mock())
     monkeypatch.setattr("slack_kb.runtime.IngestionService", Mock())
     monkeypatch.setattr("slack_kb.runtime.App", Mock())
@@ -42,7 +42,6 @@ def test_fresh_database_is_migrated_before_vector_pool_opens(monkeypatch) -> Non
     monkeypatch.setattr("slack_kb.runtime.SocketModeHandler", Mock())
 
     settings = Settings(
-        openai_api_key="test-openai-key",
         database_url="postgresql://example.test/slack_kb",
         slack_bot_token="xoxb-test",
         slack_app_token="xapp-test",

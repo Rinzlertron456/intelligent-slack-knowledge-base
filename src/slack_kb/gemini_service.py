@@ -12,89 +12,63 @@ from slack_kb.config import Settings
 from slack_kb.models import RetrievalHit
 
 
-class OpenAIService:
+class GeminiService:
+    """LLM service backed exclusively by Google Gemini via ADC."""
+
     def __init__(self, settings: Settings):
         self.settings = settings
-        self._openai_client = None
-        self._token_expiry = 0
-        self._last_token = ""
-        self._current_client_type = None
+        self._client: OpenAI | None = None
+        self._token_expiry: float = 0
+        self._last_token: str = ""
 
-    def _get_google_access_token(self) -> str:
+    def _get_access_token(self) -> str:
         now = time.time()
-        # If we have a token and it is still valid for at least 5 minutes, reuse it
+        # Reuse token if still valid for at least 5 minutes
         if self._last_token and self._token_expiry > now + 300:
             return self._last_token
 
-        credentials, project = google_auth_default(
+        credentials, _project = google_auth_default(
             scopes=["https://www.googleapis.com/auth/cloud-platform"]
         )
         auth_req = GoogleAuthRequest()
         credentials.refresh(auth_req)
-        
+
         token = credentials.token
         if not token:
             raise ValueError("Failed to retrieve Google Cloud access token")
 
         self._last_token = token
-        self._token_expiry = credentials.expiry.timestamp() if credentials.expiry else (time.time() + 3600)
+        self._token_expiry = (
+            credentials.expiry.timestamp() if credentials.expiry else (time.time() + 3600)
+        )
         return token
 
-    def _is_gemini(self) -> bool:
-        gemini_key = self.settings.gemini_api_key.get_secret_value()
-        use_adc = self.settings.gemini_use_adc
-        if use_adc is None:
-            use_adc = not gemini_key and not self.settings.openai_api_key.get_secret_value()
-        return bool(gemini_key or use_adc)
-
     def _get_client(self) -> OpenAI:
-        gemini_key = self.settings.gemini_api_key.get_secret_value()
-        use_adc = self.settings.gemini_use_adc
-        if use_adc is None:
-            use_adc = not gemini_key and not self.settings.openai_api_key.get_secret_value()
-
-        is_gemini = bool(gemini_key or use_adc)
-        client_type = "gemini-adc" if (is_gemini and use_adc) else ("gemini" if is_gemini else "openai")
-
-        if client_type == "gemini-adc":
-            token = self._get_google_access_token()
-            if not self._openai_client or self._current_client_type != "gemini-adc" or self._openai_client.api_key != token:
-                self._openai_client = OpenAI(
-                    api_key=token,
-                    base_url=self.settings.gemini_base_url
+        api_key = self.settings.gemini_api_key.get_secret_value()
+        if api_key:
+            if not self._client or self._client.api_key != api_key:
+                self._client = OpenAI(
+                    api_key=api_key,
+                    base_url=self.settings.gemini_base_url,
                 )
-                self._current_client_type = "gemini-adc"
-            return self._openai_client
+            return self._client
 
-        if not self._openai_client or self._current_client_type != client_type:
-            api_key = gemini_key if is_gemini else self.settings.openai_api_key.get_secret_value()
-            if not api_key:
-                raise ValueError("No OpenAI or Gemini API key configured and ADC is disabled")
-            
-            self._openai_client = OpenAI(
-                api_key=api_key,
-                base_url=self.settings.gemini_base_url if is_gemini else None
+        token = self._get_access_token()
+        if not self._client or self._client.api_key != token:
+            self._client = OpenAI(
+                api_key=token,
+                base_url=self.settings.gemini_base_url,
             )
-            self._current_client_type = client_type
-            
-        return self._openai_client
+        return self._client
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8), reraise=True)
     def embed(self, texts: list[str]) -> list[list[float]]:
         if not texts:
             return []
-        is_gemini = self._is_gemini()
-        model = self.settings.gemini_embed_model if is_gemini else self.settings.openai_embedding_model
-        
-        kwargs = {}
-        if not is_gemini:
-            kwargs["dimensions"] = self.settings.embedding_dimensions
-
         client = self._get_client()
         response = client.embeddings.create(
-            model=model,
+            model=self.settings.gemini_embed_model,
             input=texts,
-            **kwargs
         )
         return [item.embedding for item in sorted(response.data, key=lambda item: item.index)]
 
@@ -111,13 +85,10 @@ class OpenAIService:
             for index, hit in enumerate(hits, start=1)
         )
         history_text = "\n".join(f"{role}: {content}" for role, content in history[-6:])
-        
-        is_gemini = self._is_gemini()
-        model = self.settings.gemini_model if is_gemini else self.settings.openai_chat_model
-        
+
         client = self._get_client()
         response = client.chat.completions.create(
-            model=model,
+            model=self.settings.gemini_model,
             messages=[
                 {
                     "role": "system",
@@ -143,12 +114,9 @@ class OpenAIService:
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=8), reraise=True)
     def summarize(self, *, title: str, content: str) -> str:
-        is_gemini = self._is_gemini()
-        model = self.settings.gemini_model if is_gemini else self.settings.openai_chat_model
-        
         client = self._get_client()
         response = client.chat.completions.create(
-            model=model,
+            model=self.settings.gemini_model,
             messages=[
                 {
                     "role": "system",
@@ -169,12 +137,9 @@ class OpenAIService:
 
     def auto_tags(self, *, title: str, content: str) -> list[str]:
         try:
-            is_gemini = self._is_gemini()
-            model = self.settings.gemini_model if is_gemini else self.settings.openai_chat_model
-            
             client = self._get_client()
             response = client.chat.completions.create(
-                model=model,
+                model=self.settings.gemini_model,
                 messages=[
                     {
                         "role": "system",
@@ -195,7 +160,7 @@ class OpenAIService:
                 cleaned = re.sub(r"^```(?:json)?\n|```$", "", raw_text.strip(), flags=re.MULTILINE)
             else:
                 cleaned = raw_text.strip()
-                
+
             parsed = json.loads(cleaned)
             if isinstance(parsed, list):
                 tags = [str(tag).strip().lower()[:40] for tag in parsed if str(tag).strip()]
@@ -215,4 +180,3 @@ def heuristic_tags(title: str, content: str) -> list[str]:
     words = re.findall(r"[a-zA-Z][a-zA-Z0-9_-]{3,}", f"{title} {content[:6000]}".lower())
     counts = Counter(word for word in words if word not in stopwords)
     return [word for word, _ in counts.most_common(5)]
-

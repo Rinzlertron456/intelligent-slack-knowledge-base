@@ -16,7 +16,7 @@ The product contract is intentionally strict:
 - Slack Socket Mode with `/knowledge` and `@mention` interactions.
 - PDF, DOCX, text, Markdown, URL, and Slack file ingestion.
 - Same-channel past Slack-thread ingestion and direct-message interaction.
-- OpenAI embeddings with Supabase Postgres and pgvector.
+- Gemini embeddings (via ADC) with Supabase Postgres and pgvector.
 - LangGraph retrieval, evidence gate, generation, and citation validation.
 - Personal, channel-backed team, and organisation scopes.
 - Auto-tagging, source citations, summaries, ingestion status, and safe refusal.
@@ -35,7 +35,7 @@ LangGraph query flow <---------------- Supabase Postgres + pgvector
         |
         +--> ACL-filtered hybrid retrieval
         +--> evidence threshold
-        +--> grounded OpenAI response
+        +--> grounded Gemini response
         +--> deterministic citation validator
         |
         v
@@ -120,9 +120,9 @@ Organisation-wide ingestion is denied unless the Slack user ID is listed in
 
 ## Secret handling
 
-Never commit `.env`, `.env.local`, Slack tokens, Supabase passwords, or OpenAI
-keys. Rotate a credential immediately if it is pasted into a chat, issue, commit,
-or screenshot.
+Never commit `.env`, `.env.local`, Slack tokens, or Supabase passwords.
+Rotate a credential immediately if it is pasted into a chat, issue, commit,
+or screenshot. LLM access uses Google Cloud ADC — no API keys are stored.
 
 ## Delivery phases
 

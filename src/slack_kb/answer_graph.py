@@ -7,8 +7,8 @@ from langgraph.graph import END, START, StateGraph
 
 from slack_kb.config import Settings
 from slack_kb.database import Database
+from slack_kb.gemini_service import GeminiService
 from slack_kb.models import AnswerResult, RequestContext, RetrievalHit
-from slack_kb.openai_service import OpenAIService
 
 REFUSAL = "I couldn't find enough evidence in the knowledge base to answer that."
 
@@ -23,9 +23,9 @@ class AnswerState(TypedDict):
 
 
 class AnswerGraph:
-    def __init__(self, database: Database, openai: OpenAIService, settings: Settings):
+    def __init__(self, database: Database, gemini: GeminiService, settings: Settings):
         self.database = database
-        self.openai = openai
+        self.gemini = gemini
         self.settings = settings
         workflow = StateGraph(AnswerState)
         workflow.add_node("retrieve", self._retrieve)
@@ -68,7 +68,7 @@ class AnswerGraph:
             content for role, content in state["history"][-3:] if role == "user"
         )
         retrieval_query = f"{history_questions}\n{state['question']}".strip()
-        embedding = self.openai.embed([retrieval_query])[0]
+        embedding = self.gemini.embed([retrieval_query])[0]
         hits = self.database.search(
             context=state["context"],
             question=state["question"],
@@ -83,7 +83,7 @@ class AnswerGraph:
         return {"answer": REFUSAL, "refused": True}
 
     def _generate(self, state: AnswerState) -> dict:
-        answer = self.openai.answer(
+        answer = self.gemini.answer(
             question=state["question"],
             history=state["history"],
             hits=state["hits"],

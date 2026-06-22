@@ -15,7 +15,7 @@ from slack_kb.config import get_settings
 from slack_kb.database import Database
 from slack_kb.ingestion import IngestionService
 from slack_kb.models import KnowledgeScope, RequestContext
-from slack_kb.openai_service import OpenAIService
+from slack_kb.gemini_service import GeminiService
 from slack_kb.parsers import parse_plain_text
 
 
@@ -126,13 +126,13 @@ def run(dataset_path: Path, *, limit: int | None = None) -> dict[str, Any]:
     results: list[CaseResult] = []
 
     try:
-        openai = OpenAIService(settings)
+        gemini = GeminiService(settings)
         ingestion = IngestionService(
             database,
-            openai,
+            gemini,
             org_admin_user_ids={"U_ADMIN"},
         )
-        graph = AnswerGraph(database, openai, settings)
+        graph = AnswerGraph(database, gemini, settings)
 
         for document in dataset["documents"]:
             context = RequestContext(

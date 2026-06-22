@@ -22,9 +22,9 @@ membership boundary and prevents cross-channel leakage.
 
 ## Retrieval
 
-OpenAI `text-embedding-3-small` vectors are stored in pgvector. Retrieval blends
-cosine similarity and PostgreSQL full-text rank. A minimum similarity gate
-prevents weak matches from reaching generation.
+Gemini `text-embedding-004` vectors (768 dimensions) are stored in pgvector.
+Retrieval blends cosine similarity and PostgreSQL full-text rank. A minimum
+similarity gate prevents weak matches from reaching generation.
 
 The initial 0.42 similarity threshold was reduced to 0.35 after a 45-case golden
 evaluation showed three valid policy questions scoring between 0.366 and 0.404.

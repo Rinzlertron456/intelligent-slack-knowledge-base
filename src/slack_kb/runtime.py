@@ -10,8 +10,8 @@ from slack_kb.answer_graph import AnswerGraph
 from slack_kb.config import Settings
 from slack_kb.database import Database
 from slack_kb.database import apply_migrations as apply_database_migrations
+from slack_kb.gemini_service import GeminiService
 from slack_kb.ingestion import IngestionService
-from slack_kb.openai_service import OpenAIService
 from slack_kb.slack_app import SlackKnowledgeApp
 
 
@@ -51,18 +51,18 @@ def build_slack_runtime(
     database = Database(database_url)
     database.open()
     try:
-        openai = OpenAIService(settings)
-        answer_graph = AnswerGraph(database, openai, settings)
+        gemini = GeminiService(settings)
+        answer_graph = AnswerGraph(database, gemini, settings)
         ingestion = IngestionService(
             database,
-            openai,
+            gemini,
             org_admin_user_ids=settings.org_admins,
         )
         app = App(token=settings.slack_bot_token.get_secret_value())
         SlackKnowledgeApp(
             app=app,
             database=database,
-            openai=openai,
+            gemini=gemini,
             answer_graph=answer_graph,
             ingestion=ingestion,
         )
