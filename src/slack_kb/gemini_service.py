@@ -50,8 +50,8 @@ class GeminiService:
         return token
 
     def _get_client(self) -> OpenAI:
-        api_key = self.settings.gemini_api_key.get_secret_value()
-        if api_key and self._is_api_key_valid(api_key):
+        api_key = self.settings.gemini_api_key.get_secret_value() or self.settings.openai_api_key.get_secret_value()
+        if api_key:
             if not self._client or self._client.api_key != api_key:
                 self._client = OpenAI(
                     api_key=api_key,
@@ -69,8 +69,8 @@ class GeminiService:
         return self._client
 
     def _get_model(self) -> str:
-        api_key = self.settings.gemini_api_key.get_secret_value()
-        if api_key and self._is_api_key_valid(api_key):
+        api_key = self.settings.gemini_api_key.get_secret_value() or self.settings.openai_api_key.get_secret_value()
+        if api_key:
             return self.settings.gemini_model
         
         model = self.settings.gemini_model
@@ -87,8 +87,8 @@ class GeminiService:
         if not texts:
             return []
         
-        api_key = self.settings.gemini_api_key.get_secret_value()
-        if api_key and self._is_api_key_valid(api_key):
+        api_key = self.settings.gemini_api_key.get_secret_value() or self.settings.openai_api_key.get_secret_value()
+        if api_key:
             client = self._get_client()
             response = client.embeddings.create(
                 model=self.settings.gemini_embed_model,

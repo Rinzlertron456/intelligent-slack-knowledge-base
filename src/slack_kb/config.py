@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     database_url: SecretStr
     gemini_api_key: SecretStr = Field(default=SecretStr(""))
+    openai_api_key: SecretStr = Field(default=SecretStr(""))
 
     slack_bot_token: SecretStr = Field(default=SecretStr(""))
     slack_app_token: SecretStr = Field(default=SecretStr(""))
