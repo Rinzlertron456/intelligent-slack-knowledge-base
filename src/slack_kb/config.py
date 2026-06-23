@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     api_host: str = "127.0.0.1"
     api_port: int = 8000
+    embedding_dimensions: int = 768
 
     @field_validator("database_url")
     @classmethod
